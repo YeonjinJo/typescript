@@ -1,9 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/config/configStore";
-import ModifyTodo from "./ModifyTodo";
-import DeleteTodo from "./DeleteTodo";
-import ToggleTodo from "./ToggleTodo";
+import MapTodo from "./MapTodo";
 
 const ListTodo = () => {
   const todoList = useSelector(
@@ -11,13 +9,14 @@ const ListTodo = () => {
   );
   return (
     <div>
+      <h2>In Progress</h2>
       {todoList.map((element) => (
-        <p key={element.id} id={element.id}>
-          {element.title}
-          <ToggleTodo id={element.id} />
-          <ModifyTodo id={element.id} />
-          <DeleteTodo id={element.id} />
-        </p>
+        <>{!element.isDone ? <MapTodo element={element} /> : <></>}</>
+      ))}
+
+      <h2>Done</h2>
+      {todoList.map((element) => (
+        <>{element.isDone ? <MapTodo element={element} /> : <></>}</>
       ))}
     </div>
   );
