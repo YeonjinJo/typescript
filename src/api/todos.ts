@@ -35,6 +35,6 @@ export const getTargetTodo = async (id: string) => {
 export const toggleTodo = async (id: string) => {
   const isDone = await getTargetTodo(id);
   await axios.patch(`${process.env.REACT_APP_SERVER_ADDRESS}/todoItems/${id}`, {
-    isDone: isDone ? false : true,
+    isDone: !isDone,
   });
 };
