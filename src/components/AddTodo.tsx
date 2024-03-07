@@ -1,13 +1,19 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import uuid from "react-uuid";
-import { AppDispatch } from "../redux/config/configStore";
-import { addTodo } from "../redux/modules/todoSlice";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addTodo } from "../api/todos";
 
 const AddTodo = () => {
   const [title, setTitle] = useState<string>("");
   const id: string = uuid();
-  const dispatch = useDispatch<AppDispatch>();
+
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: addTodo, 
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["todos"]});
+    },
+  });
 
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -20,16 +26,18 @@ const AddTodo = () => {
       id,
       title,
       isDone: false,
-    }
-    dispatch(addTodo(newTodo))
-    setTitle('')
-  }
+    };
+
+    mutate(newTodo);
+
+    setTitle("");
+  };
 
   return (
-      <form onSubmit={onSubmitHandler}>
-        <input type="text" value={title} onChange={onChangeHandler}></input>
-        <button>Submit</button>
-      </form>
+    <form onSubmit={onSubmitHandler}>
+      <input type="text" value={title} onChange={onChangeHandler}></input>
+      <button>Submit</button>
+    </form>
   );
 };
 

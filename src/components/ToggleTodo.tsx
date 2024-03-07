@@ -1,20 +1,31 @@
-import React from "react";
-import { modifyTodo } from "../redux/modules/todoSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/config/configStore";
+import { useState } from "react";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { getTargetTodo, toggleTodo } from "../api/todos";
+
 
 const ToggleTodo = ({ id }: { id: string }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const todoList = useSelector(
-    (state: RootState) => state.todoManagement.todoItems
-  );
-  const [target] = todoList.filter((element) => id === element.id);
-  const newTodo = {...target, isDone: !target.isDone};
+  const [isDone, setIsDone] = useState<boolean>();
 
-  const onClickHandler = () => {
-    dispatch(modifyTodo(newTodo));
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: toggleTodo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["todos"]});
+    },
+  });
+
+  const onClickHandler = async () => {
+    setIsDone(await getTargetTodo(id))
+    mutate(id);
   };
-  return <button onClick={onClickHandler}>{target.isDone?`취소`:`완료`}</button>;
+
+  console.log(isDone)
+
+
+  return (
+    <button onClick={onClickHandler}>{isDone ? `취소` : `완료`}</button>
+  );
 };
 
 export default ToggleTodo;

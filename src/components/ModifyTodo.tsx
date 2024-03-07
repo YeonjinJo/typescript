@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/config/configStore";
-import { modifyTodo } from "../redux/modules/todoSlice";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { modifyTodo } from "../api/todos";
 
 const ModifyTodo = ({ id }: { id: string }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const todoList = useSelector(
-    (state: RootState) => state.todoManagement.todoItems
-  );
-  const [target] = todoList.filter((element) => id === element.id);
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: modifyTodo, 
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["todos"]});
+    },
+  });
 
   const [modifyOpen, setModifyOpen] = useState<Boolean>(false);
   const [newTitle, setNewTitle] = useState<string>("");
@@ -17,12 +18,8 @@ const ModifyTodo = ({ id }: { id: string }) => {
     setNewTitle(event.target.value);
   };
 
-  const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const newTodo = {...target, title: newTitle};
-    dispatch(modifyTodo(newTodo))
-
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    mutate([id, newTitle]);
     setModifyOpen(false);
   };
 
@@ -33,10 +30,14 @@ const ModifyTodo = ({ id }: { id: string }) => {
   return (
     <>
       {modifyOpen ? (
-        <form onSubmit={onSubmitHandler}>
-          <input type="text" value={newTitle} onChange={onChangeHandler}></input>
-          <button>수정</button>
-        </form>
+        <div>
+          <input
+            type="text"
+            value={newTitle}
+            onChange={onChangeHandler}
+          ></input>
+          <button onClick={onClickHandler}>수정</button>
+        </div>
       ) : (
         <button onClick={modifyForm}>수정</button>
       )}

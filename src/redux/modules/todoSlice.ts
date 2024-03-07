@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type ContentType = {
+export type ContentType = {
   id: string;
   title: string;
   isDone: boolean;

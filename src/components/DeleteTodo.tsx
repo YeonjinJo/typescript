@@ -1,17 +1,17 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../redux/config/configStore";
-import { deleteTodo } from "../redux/modules/todoSlice";
+import { deleteTodo } from "../api/todos";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const DeleteTodo = ({ id }: { id: string }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const todoList = useSelector(
-    (state: RootState) => state.todoManagement.todoItems
-  );
-  const [target] = todoList.filter((element) => id === element.id);
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: deleteTodo, 
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["todos"]});
+    },
+  });
 
-  const onClickHandler = () => {   
-    dispatch(deleteTodo(target));
+  const onClickHandler = () => {
+    mutate(id);
   };
   return <button onClick={onClickHandler}>삭제</button>;
 };

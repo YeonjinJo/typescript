@@ -1,21 +1,36 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/config/configStore";
 import MapTodo from "./MapTodo";
+import { useQuery } from "@tanstack/react-query";
+import { loadTodo } from "../api/todos";
+import { AxiosError } from "axios";
+
+type ContentType = {
+  id: string;
+  title: string;
+  isDone: boolean;
+};
 
 const ListTodo = () => {
-  const todoList = useSelector(
-    (state: RootState) => state.todoManagement.todoItems
-  );
+  const { isLoading, isError, data } = useQuery<ContentType[], AxiosError>({
+    queryKey: ["todos"],
+    queryFn: loadTodo,
+  });
+
+  if (isLoading) {
+    return <h1>로딩 중</h1>;
+  }
+  if (isError) {
+    return <h1>에러 발생</h1>;
+  }
+
   return (
     <div>
       <h2>In Progress</h2>
-      {todoList.map((element) => (
+      {data!.map((element) => (
         <>{!element.isDone ? <MapTodo element={element} /> : <></>}</>
       ))}
 
       <h2>Done</h2>
-      {todoList.map((element) => (
+      {data!.map((element) => (
         <>{element.isDone ? <MapTodo element={element} /> : <></>}</>
       ))}
     </div>
