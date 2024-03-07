@@ -20,9 +20,6 @@ const ToggleTodo = ({ id }: { id: string }) => {
     mutate(id);
   };
 
-  console.log(isDone)
-
-
   return (
     <button onClick={onClickHandler}>{isDone ? `취소` : `완료`}</button>
   );
