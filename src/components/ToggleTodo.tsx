@@ -1,11 +1,8 @@
-import { useState } from "react";
-
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { getTargetTodo, toggleTodo } from "../api/todos";
+import { toggleTodo } from "../api/todos";
 
 
-const ToggleTodo = ({ id }: { id: string }) => {
-  const [isDone, setIsDone] = useState<boolean>();
+const ToggleTodo = ({ id, isDone }: { id: string, isDone: boolean }) => {
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
@@ -16,7 +13,6 @@ const ToggleTodo = ({ id }: { id: string }) => {
   });
 
   const onClickHandler = async () => {
-    setIsDone(await getTargetTodo(id))
     mutate(id);
   };
 

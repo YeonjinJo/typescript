@@ -12,7 +12,7 @@ const MapTodo = ({ element }: { element: ContentType }) => {
   return (
     <div key={element.id} id={element.id}>
       <p>{element.title}</p>
-      <ToggleTodo id={element.id} />
+      <ToggleTodo id={element.id} isDone={element.isDone}/>
       <ModifyTodo id={element.id} />
       <DeleteTodo id={element.id} />
     </div>
